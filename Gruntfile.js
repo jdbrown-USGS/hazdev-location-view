@@ -192,11 +192,10 @@ module.exports = function (grunt) {
 			app: {
 				expand: true,
 				options: {mode: true},
-				cwd: '<%= app.dev %>/src',
-				dest: '<%= app.dist %>/src',
+				cwd: '<%= app.src %>',
+				dest: '<%= app.dist %>',
 				src: [
-					'img/**/*.{png,gif,jpg,jpeg}',
-					'**/*.php'
+					'*.{png,gif,jpg,jpeg}'
 				]
 			}
 		}
@@ -224,6 +223,7 @@ module.exports = function (grunt) {
 		'compass:dev',
 		'cssmin:dist',
 		'requirejs:dist',
-		'uglify:dist'
+		'uglify:dist',
+		'copy:app'
 	]);
 };
