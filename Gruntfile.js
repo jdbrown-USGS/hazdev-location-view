@@ -187,6 +187,18 @@ module.exports = function (grunt) {
 							['<%= app.dist %>/GeolocateControl.js']
 				}
 			}
+		},
+		copy: {
+			app: {
+				expand: true,
+				options: {mode: true},
+				cwd: '<%= app.dev %>/src',
+				dest: '<%= app.dist %>/src',
+				src: [
+					'img/**/*.{png,gif,jpg,jpeg}',
+					'**/*.php'
+				]
+			}
 		}
 	});
 
