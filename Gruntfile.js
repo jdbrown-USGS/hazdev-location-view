@@ -13,7 +13,8 @@ module.exports = function (grunt) {
 	var appConfig = {
 		src: 'src',
 		test: 'test',
-		tmp: '.tmp'
+		tmp: '.tmp',
+		dist: 'dist'
 	};
 
 	// TODO :: Read this from .bowerrc
@@ -92,6 +93,100 @@ module.exports = function (grunt) {
 					]
 				}
 			}
+		},
+		requirejs: {
+			dist: {
+				options: {
+					baseUrl: appConfig.src,
+					optimize: 'none',
+					dir: appConfig.dist,
+					useStrict: true,
+					wrap: false,
+
+					paths: {
+						'mvc': '../bower_components/hazdev-webutils/src/mvc',
+						'util': '../bower_components/hazdev-webutils/src/util',
+						leaflet: '../node_modules/leaflet/dist/leaflet-src'
+					},
+					modules: [
+						{
+							name: 'CoordinateControl',
+							excludeShallow: [
+								'leaflet'
+							]
+						},
+						{
+							name: 'GeocodeControl',
+							excludeShallow: [
+								'leaflet'
+							]
+						},
+						{
+							name: 'LocationControl',
+							excludeShallow: [
+								'leaflet'
+							]
+						},
+						{
+							name: 'LocationView'
+						},
+						{
+							name: 'PointControl',
+							excludeShallow: [
+								'leaflet'
+							]
+						}
+					]
+				}
+			}
+		},
+		cssmin: {
+			dist: {
+				files: {
+					'<%= app.dist %>/CoordinateControl.css': [
+						'.tmp/CoordinateControl.css'
+					],
+					'<%= app.dist %>/GeocodeControl.css': [
+						'.tmp/GeocodeControl.css'
+					],
+					'<%= app.dist %>/LocationView.css': [
+						'.tmp/LocationView.css'
+					],
+					'<%= app.dist %>/LocationControl.css': [
+						'.tmp/LocationControl.css'
+					],
+					'<%= app.dist %>/PointControl.css': [
+						'.tmp/PointControl.css'
+					],
+					'<%= app.dist %>/GeolocateControl.css': [
+						'.tmp/GeolocateControl.css'
+					]
+				}
+			}
+		},
+		uglify: {
+			options: {
+				mangle: true,
+				compress: true,
+				report: 'gzip',
+				wrap: false
+			},
+			dist: {
+				files: {
+					'<%= app.dist %>/CoordinateControl.min.js':
+							['<%= app.dist %>/CoordinateControl.js'],
+					'<%= app.dist %>/GeocodeControl.min.js':
+							['<%= app.dist %>/GeocodeControl.js'],
+					'<%= app.dist %>/LocationView.min.js':
+							['<%= app.dist %>/LocationView.js'],
+					'<%= app.dist %>/LocationControl.min.js':
+							['<%= app.dist %>/LocationControl.js'],
+					'<%= app.dist %>/PointControl.min.js':
+							['<%= app.dist %>/PointControl.js'],
+					'<%= app.dist %>/GeolocateControl.min.js':
+							['<%= app.dist %>/GeolocateControl.js']
+				}
+			}
 		}
 	});
 
@@ -110,5 +205,13 @@ module.exports = function (grunt) {
 		'compass:dev',
 		'mocha_phantomjs',
 		'watch'
+	]);
+
+	grunt.registerTask('build', [
+		'jshint',
+		'compass:dev',
+		'cssmin:dist',
+		'requirejs:dist',
+		'uglify:dist'
 	]);
 };
