@@ -99,7 +99,8 @@ module.exports = function (grunt) {
 				options: {
 					baseUrl: appConfig.src,
 					optimize: 'none',
-					dir: appConfig.dist,
+					name: 'LocationView',
+					out: appConfig.dist + '/LocationView.js',
 					useStrict: true,
 					wrap: false,
 
@@ -108,58 +109,20 @@ module.exports = function (grunt) {
 						'util': '../bower_components/hazdev-webutils/src/util',
 						leaflet: '../node_modules/leaflet/dist/leaflet-src'
 					},
-					modules: [
-						{
-							name: 'CoordinateControl',
-							excludeShallow: [
-								'leaflet'
-							]
-						},
-						{
-							name: 'GeocodeControl',
-							excludeShallow: [
-								'leaflet'
-							]
-						},
-						{
-							name: 'LocationControl',
-							excludeShallow: [
-								'leaflet'
-							]
-						},
-						{
-							name: 'LocationView'
-						},
-						{
-							name: 'PointControl',
-							excludeShallow: [
-								'leaflet'
-							]
+					shim: {
+						leaflet: {
+							exports: 'L'
 						}
-					]
+					}
 				}
 			}
 		},
 		cssmin: {
 			dist: {
 				files: {
-					'<%= app.dist %>/CoordinateControl.css': [
-						'.tmp/CoordinateControl.css'
-					],
-					'<%= app.dist %>/GeocodeControl.css': [
-						'.tmp/GeocodeControl.css'
-					],
-					'<%= app.dist %>/LocationView.css': [
+					'<%= app.dist %>/LocationView.min.css': [
+						'node_modules/leaflet/dist/leaflet.css',
 						'.tmp/LocationView.css'
-					],
-					'<%= app.dist %>/LocationControl.css': [
-						'.tmp/LocationControl.css'
-					],
-					'<%= app.dist %>/PointControl.css': [
-						'.tmp/PointControl.css'
-					],
-					'<%= app.dist %>/GeolocateControl.css': [
-						'.tmp/GeolocateControl.css'
 					]
 				}
 			}
@@ -168,23 +131,12 @@ module.exports = function (grunt) {
 			options: {
 				mangle: true,
 				compress: true,
-				report: 'gzip',
-				wrap: false
+				report: 'gzip'
 			},
 			dist: {
 				files: {
-					'<%= app.dist %>/CoordinateControl.min.js':
-							['<%= app.dist %>/CoordinateControl.js'],
-					'<%= app.dist %>/GeocodeControl.min.js':
-							['<%= app.dist %>/GeocodeControl.js'],
 					'<%= app.dist %>/LocationView.min.js':
-							['<%= app.dist %>/LocationView.js'],
-					'<%= app.dist %>/LocationControl.min.js':
-							['<%= app.dist %>/LocationControl.js'],
-					'<%= app.dist %>/PointControl.min.js':
-							['<%= app.dist %>/PointControl.js'],
-					'<%= app.dist %>/GeolocateControl.min.js':
-							['<%= app.dist %>/GeolocateControl.js']
+							['<%= app.dist %>/LocationView.js']
 				}
 			}
 		},
@@ -196,6 +148,42 @@ module.exports = function (grunt) {
 				dest: '<%= app.dist %>',
 				src: [
 					'*.{png,gif,jpg,jpeg}'
+				]
+			},
+			css: {
+				expand: true,
+				options: {mode: true},
+				cwd: '<%= app.tmp %>',
+				dest: '<%= app.dist %>',
+				src: [
+					'LocationView.css'
+				]
+			},
+			leaflet: {
+				expand: true,
+				options: {mode: true},
+				cwd: 'node_modules/leaflet/dist/images',
+				dest: '<%= app.dist %>/images',
+				src: [
+					'*.{png,gif,jpg,jpeg}'
+				]
+			},
+			example: {
+				expand: true,
+				options: {mode: true},
+				cwd: '<%= app.test %>',
+				dest: '<%= app.dist %>',
+				src: [
+					'example.*'
+				]
+			},
+			require: {
+				expand: true,
+				options: {mode: true},
+				cwd: 'bower_components/requirejs',
+				dest: '<%= app.dist %>',
+				src: [
+					'require.js'
 				]
 			}
 		}
@@ -224,6 +212,10 @@ module.exports = function (grunt) {
 		'cssmin:dist',
 		'requirejs:dist',
 		'uglify:dist',
-		'copy:app'
+		'copy:app',
+		'copy:css',
+		'copy:leaflet',
+		'copy:example',
+		'copy:require'
 	]);
 };
