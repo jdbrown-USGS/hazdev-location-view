@@ -66,6 +66,18 @@ module.exports = function (grunt) {
 						];
 					}
 				}
+			},
+			dist: {
+				options: {
+					base: '<%= app.dist %>',
+					port: 8000,
+					keepalive: true,
+					middleware: function (connect, options) {
+						return [
+							mountFolder(connect, options.base)
+						];
+					}
+				}
 			}
 		},
 		jshint: {
@@ -122,6 +134,7 @@ module.exports = function (grunt) {
 				files: {
 					'<%= app.dist %>/LocationView.min.css': [
 						'node_modules/leaflet/dist/leaflet.css',
+						'bower_components/hazdev-webutils/src/mvc/ModalView.css',
 						'.tmp/LocationView.css'
 					]
 				}
@@ -147,7 +160,7 @@ module.exports = function (grunt) {
 				cwd: '<%= app.src %>',
 				dest: '<%= app.dist %>',
 				src: [
-					'*.{png,gif,jpg,jpeg}'
+					'*.{png,gif,jpg,jpeg,cur}'
 				]
 			},
 			css: {
@@ -170,11 +183,42 @@ module.exports = function (grunt) {
 			},
 			example: {
 				expand: true,
-				options: {mode: true},
+				flatten: true,
+				options: {
+					mode: true,
+					process: function (content) {
+						content = content.replace(
+								'<script src="/requirejs/require.js"></script>',
+								'<script src="require.js"></script>');
+
+						content = content.replace(
+								'<script src="js/config.js"></script>',
+								'');
+
+						content = content.replace(
+								'<script src="js/LocationViewUITest.js"></script>',
+								'<script src="LocationViewUITest.js"></script>');
+
+						content = content.replace(
+								'<link rel="stylesheet" href="/leaflet/dist/leaflet.css"/>',
+								'');
+
+						content = content.replace(
+								'<link rel="stylesheet" ' +
+								'href="/hazdev-webutils/src/mvc/ModalView.css"/>',
+								'');
+
+						content = content.replace(
+								'<link rel="stylesheet" href="/css/LocationViewUITest.css"/>',
+								'<link rel="stylesheet" href="LocationView.min.css"/>');
+						return content;
+					}
+				},
 				cwd: '<%= app.test %>',
 				dest: '<%= app.dist %>',
 				src: [
-					'example.*'
+					'LocationViewUITest.html',
+					'js/LocationViewUITest.js'
 				]
 			},
 			require: {
@@ -216,6 +260,7 @@ module.exports = function (grunt) {
 		'copy:css',
 		'copy:leaflet',
 		'copy:example',
-		'copy:require'
+		'copy:require',
+		'connect:dist'
 	]);
 };
