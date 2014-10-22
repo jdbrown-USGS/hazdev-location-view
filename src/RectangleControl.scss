@@ -1,0 +1,15 @@
+@import 'RectangleOverlayView';
+@import '_leafletshim';
+
+
+.leaflet-rectangle-control-active {
+  cursor:crosshair;
+
+  .leaflet-rectangle-control {
+    @include basic-control-button-sunken();
+  }
+}
+
+.leaflet-rectangle-control:active {
+  @include basic-control-button-sunken();
+}
